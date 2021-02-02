@@ -36,14 +36,15 @@ namespace liqeosdt {
     typedef eosio::multi_index< "parameters"_n, parameters_row > parameters;
 
 
-    asset get_liquidation_amount() {
+    std::pair<asset, std::string> get_liquidation_amount() {
 
         parameters paramstbl( code, code.value );
         for(const auto& row: paramstbl) {
-            if(row.bad_debt.amount >= min_amount) return row.bad_debt;
+            if(row.bad_debt.amount >= min_amount) return { row.bad_debt, ""};
+            if(row.surplus_debt.amount >= min_amount) return { row.surplus_debt, "surplus"};
         }
 
-        return {0, EOSDT.get_symbol()};
+        return {asset{0, EOSDT.get_symbol()}, ""};
     }
 
 }
